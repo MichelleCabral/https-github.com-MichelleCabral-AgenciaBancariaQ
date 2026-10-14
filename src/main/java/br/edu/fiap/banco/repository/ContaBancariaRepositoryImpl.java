@@ -5,6 +5,7 @@ import br.edu.fiap.banco.entity.Pessoa;
 import br.edu.fiap.banco.entity.TipoConta;
 import br.edu.fiap.banco.exception.ContaJaCadastradaException;
 import br.edu.fiap.banco.exception.PessoaPossuiContaException;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import javax.sql.DataSource;
@@ -14,7 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@ApplicationScoped
 public class ContaBancariaRepositoryImpl implements ContaBancariaRepository{
 
     private static final String SELECT_BASE = """
@@ -23,7 +26,7 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository{
                    t.id AS tipo_id, t.nome AS tipo_nome
                 FROM contas_bancarias c
                 JOIN pessoas p ON p.id = c.titular_id
-                JOIN tipo_conta t ON t.id = c.tipo_conta_id
+                JOIN tipos_conta t ON t.id = c.tipo_conta_id
             """;
     private final DataSource dataSource;
 
@@ -62,6 +65,19 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository{
     @Override
     public List<ContaBancaria> listarPorTitular(Long titularId){
         return consultarLista(SELECT_BASE + "WHERE c.titular_id = ? ORDER BY c.id", titularId);
+    }
+
+    @Override
+    public Optional<ContaBancaria> buscarPorId(Long id) {
+        try (Connection c = dataSource.getConnection();
+             PreparedStatement ps = c.prepareStatement(SELECT_BASE + " WHERE c.id = ?")) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(mapear(rs)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw infraestrutura("buscar", e);
+        }
     }
 
     @Override

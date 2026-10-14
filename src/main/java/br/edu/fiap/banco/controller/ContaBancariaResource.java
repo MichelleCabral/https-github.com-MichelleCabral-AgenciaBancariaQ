@@ -28,8 +28,6 @@ public class ContaBancariaResource {
         this.service = service;
     }
 
-
-
     /** Atende {@code GET /api/contas} e devolve a coleção completa. */
     @GET
     public List<ContaBancariaResponse> listar() {
