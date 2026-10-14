@@ -60,6 +60,7 @@ public class UsuarioRepositoryJpa implements UsuarioRepository {
             if(violouChaveUnica(erro)){
                 throw new EmailJaCadastradoException();
             }
+            throw new IllegalStateException("Falhou", erro);
         }
     }
 

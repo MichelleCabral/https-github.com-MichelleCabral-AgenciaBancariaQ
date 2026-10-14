@@ -78,4 +78,8 @@ public class Usuario {
     public boolean isAtivo() {
         return ativo;
     }
+
+    public static Usuario novo(String nome, String email, String hash){
+        return new Usuario(null, nome.trim(), email.trim().toLowerCase(), hash, true);
+    }
 }
