@@ -41,6 +41,13 @@ public class ContaBancariaResource {
         return service.listarPorTitular(id);
     }
 
+    @POST
+    public Response abrir(@NotNull @Valid ContaBancariaRequest request, @Context UriInfo uriInfo) {
+        ContaBancariaResponse resposta = service.criarConta(request);
+        URI location = uriInfo.getAbsolutePathBuilder().path(resposta.id().toString()).build();
+        return Response.created(location).entity(resposta).build();
+    }
+
     /** Atende {@code PUT /api/contas/{id}} e substitui os campos editáveis. */
     @PUT
     @Path("/{id}")
